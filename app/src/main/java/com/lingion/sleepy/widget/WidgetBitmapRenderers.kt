@@ -168,9 +168,10 @@ object WidgetBitmapRenderers {
      */
     fun renderToday(
         context: Context, data: WidgetData, wDp: Float, hDp: Float,
-        variant: WidgetVariant = WidgetVariant.REGULAR
+        variant: WidgetVariant = WidgetVariant.REGULAR,
+        showNav: Boolean = false
     ): Bitmap {
-        return renderTodayRegular(context, data, wDp, hDp)
+        return renderTodayRegular(context, data, wDp, hDp, showNav)
     }
 
     /**
@@ -247,7 +248,10 @@ object WidgetBitmapRenderers {
     /**
      * Today 全量排版 — 原 renderToday 函数体原样改名迁入(REGULAR 档逐字节不变保证)
      */
-    private fun renderTodayRegular(context: Context, data: WidgetData, wDp: Float, hDp: Float): Bitmap {
+    private fun renderTodayRegular(
+        context: Context, data: WidgetData, wDp: Float, hDp: Float,
+        showNav: Boolean = false
+    ): Bitmap {
         val density = context.resources.displayMetrics.density
         val w = (wDp * density).toInt()
         val h = (hDp * density).toInt()
@@ -271,20 +275,64 @@ object WidgetBitmapRenderers {
         var y = pad
 
         // 标题行：今天 · 周X  +  日期 (showDate=false 时隐藏右侧日期, 对齐课表页设置)
+        // v1.0.39 nav: 左右两侧留出 ‹ › 按钮热区(RemoteViews 叠加, 布局里按钮宽 40dp margin 8dp),
+        //   标题居中绘制(带表名时宽容器前缀表名); 箭头符号在标题行画在按钮区内, 与标题同一 baseline 带。
         val ctx = SleepyApp.get()
-        p.color = s.primary
-        p.textSize = 13f * density
-        p.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        val titleStr = "${ctx.getString(R.string.today_today)} · ${DateUtils.localizedDay(data.date.dayOfWeek.value, ctx)}"
-        canvas.drawText(titleStr, pad, y + 13f * density, p)
+        if (showNav) {
+            val isToday = data.date == LocalDate.now()
+            val weekLabel = DateUtils.localizedDay(data.date.dayOfWeek.value, ctx)
+            // 标题组装: [表名 ·] 今天|M/D · 周X (表名仅宽容器 ≥220dp 展示, 防窄容器挤压日期语义)
+            val headNoTable = if (isToday) {
+                if (showDate) "${ctx.getString(R.string.today_today)} · ${data.date.monthValue}/${data.date.dayOfMonth} · $weekLabel"
+                else "${ctx.getString(R.string.today_today)} · $weekLabel"
+            } else {
+                "${data.date.monthValue}/${data.date.dayOfMonth} · $weekLabel"
+            }
+            val headText = if (data.tableName.isNotBlank() && wDp >= 220f)
+                "${data.tableName} · $headNoTable" else headNoTable
+            p.color = s.primary
+            p.textSize = 13f * density
+            p.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            val navInset = 50f * density
+            val maxTitleW = (w - navInset * 2).coerceAtLeast(1f)
+            canvas.drawText(ellipsize(p, headText, maxTitleW), navInset, y + 13f * density, p)
 
-        if (showDate) {
-            p.color = s.onSurfaceVariant
-            p.textSize = 12f * density
+            // 左右箭头符号 — 画在透明按钮热区(布局 8..48dp)内中心 x≈27dp
+            p.color = s.primary
+            p.textSize = 15f * density
             p.typeface = Typeface.DEFAULT
-            val dateStr = "${data.date.monthValue}/${data.date.dayOfMonth}"
-            val dateWidth = p.measureText(dateStr)
-            canvas.drawText(dateStr, w - pad - dateWidth, y + 13f * density, p)
+            val lArrow = "\u2039"
+            val rArrow = "\u203A"
+            val arrowY = y + 13f * density
+            canvas.drawText(lArrow, 27f * density - p.measureText(lArrow) / 2f, arrowY, p)
+            canvas.drawText(rArrow, w - 27f * density - p.measureText(rArrow) / 2f, arrowY, p)
+        } else {
+            // v1.0.39 fix: 表名贯通 — showNav=false 渲染路径(WeekGrid 最小档被拖大后的 Today 脸)
+            // 宽容器同样前置绑定表名; showDate 时限制标题宽避免与右侧日期重叠。
+            val dateStr = if (showDate) "${data.date.monthValue}/${data.date.dayOfMonth}" else null
+            val dateWidth = if (dateStr != null) {
+                p.textSize = 12f * density
+                p.typeface = Typeface.DEFAULT
+                p.measureText(dateStr)
+            } else 0f
+            val titleCore = "${ctx.getString(R.string.today_today)} · ${DateUtils.localizedDay(data.date.dayOfWeek.value, ctx)}"
+            val titleStr = if (data.tableName.isNotBlank() && wDp >= 260f)
+                "${data.tableName} · $titleCore" else titleCore
+
+            p.color = s.primary
+            p.textSize = 13f * density
+            p.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            val maxTitleW = if (dateStr != null)
+                (w - pad * 2 - dateWidth - 8f * density).coerceAtLeast(1f) else w - pad * 2
+            canvas.drawText(ellipsize(p, titleStr, maxTitleW), pad, y + 13f * density, p)
+
+            if (dateStr != null) {
+                p.color = s.onSurfaceVariant
+                p.textSize = 12f * density
+                p.typeface = Typeface.DEFAULT
+                val dateWidth2 = p.measureText(dateStr)
+                canvas.drawText(dateStr, w - pad - dateWidth2, y + 13f * density, p)
+            }
         }
 
         y += 24f * density
@@ -776,7 +824,8 @@ object WidgetBitmapRenderers {
             hasTable = data.hasTable,
             isDark = data.isDark,
             themeKey = data.themeKey,
-            semesterStatus = data.semesterStatus
+            semesterStatus = data.semesterStatus,
+            tableName = data.tableName
         )
     }
 
@@ -1014,11 +1063,23 @@ object WidgetBitmapRenderers {
         val pad = 12f * density
         var y = pad
 
-        // 顶部标签
+        // 顶部标签 — 右侧可叠加绑定课表名 (v1.0.39 fix: 表名贯通; 仅宽容器画, 防与左侧标题挤压)
         p.color = s.primary
         p.textSize = 13f * density
         p.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        canvas.drawText(ctx.getString(R.string.widget_twoday_label), pad, y + 13f * density, p)
+        val twodayLabel = ctx.getString(R.string.widget_twoday_label)
+        canvas.drawText(twodayLabel, pad, y + 13f * density, p)
+        if (data.tableName.isNotBlank() && wDp >= 300f) {
+            val labelW = p.measureText(twodayLabel)
+            p.color = s.onSurfaceVariant
+            p.textSize = 12f * density
+            p.typeface = Typeface.DEFAULT
+            val maxNameW = (w - pad * 2 - labelW - 8f * density).coerceAtLeast(1f)
+            val name = ellipsize(p, data.tableName, maxNameW)
+            p.textAlign = Paint.Align.RIGHT
+            canvas.drawText(name, w - pad, y + 13f * density, p)
+            p.textAlign = Paint.Align.LEFT
+        }
         y += 22f * density
 
         if (!data.hasTable || data.days.isEmpty()) {

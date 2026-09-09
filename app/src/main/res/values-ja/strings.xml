@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Sleepy 時間割</string>
+    <string name="app_name">柳叶课程表</string>
     <string name="widget_today_label">今日の授業</string>
     <string name="widget_week_list_label">今週の時間割（リスト）</string>
     <string name="widget_week_grid_label">今週の時間割（グリッド）</string>
@@ -26,6 +26,8 @@
     <string name="manage_current_table">現在の時間割</string>
     <string name="manage_import">インポート</string>
     <string name="manage_import_sub">ファイル / テキスト / CSV からインポート</string>
+    <string name="manage_share_table">時間割を共有</string>
+    <string name="manage_share_table_sub">.sleepy ファイルを書き出して共有 — 受け取った相手はそのまま取り込めます</string>
     <string name="manage_new_table">新規作成</string>
     <string name="manage_new_table_sub">空の時間割を作成し、手動で授業を追加</string>
     <string name="manage_edit_current">編集</string>
@@ -390,8 +392,8 @@
     <string name="end_label">終了</string>
     <string name="delete_period">この時限を削除</string>
 
-    <string name="mine_about">情報</string>
-    <string name="mine_about_body">Sleepy 時間割 v%1$s\n\nミニマルでクリーン、ローカルファーストの時間割アプリ。\nすべてのデータはデバイス内に保存され、サーバーにアップロードされません。\n\n· 広告なし\n· 追跡なし\n· WakeUp / ICS / CSV / HTML / プレーンテキスト インポート対応</string>
+    
+    
 
     <string-array name="day_names">
         <item>月</item>
@@ -407,7 +409,7 @@
     <string name="date_long_format">%1$d月%2$d日</string>
     <string name="notif_title">今日の授業 — %1$s %2$s</string>
     <string name="notif_text">タップして今日の時間割を表示</string>
-    <string name="theme_name_default">ライラック</string>
+    <string name="theme_name_default">桜ブルー</string>
     <string name="theme_name_spring">スプリング</string>
     <string name="theme_name_ocean">オーシャン</string>
     <string name="theme_name_peach">ピーチ</string>
@@ -435,7 +437,7 @@
     <string name="appearance_section_theme">テーマカラー</string>
     <string name="appearance_section_display">授業の表示</string>
     <string name="appearance_section_widget">ウィジェット</string>
-    <string name="about_update_latest">最新バージョン v%1$s です</string>
+    
     <string name="update_found_title">新しいバージョン v%1$s があります</string>
     <string name="update_download">ダウンロード</string>
     <string name="update_cancel">キャンセル</string>
@@ -443,16 +445,10 @@
     <string name="update_installing">ダウンロード完了、インストーラーを起動中</string>
     <string name="update_retry">再試行</string>
     <string name="update_download_failed">ダウンロード失敗: %1$s</string>
-    <string name="about_author">作者</string>
-    <string name="about_author_name">Lingion</string>
-    <string name="about_license_body">本アプリの一部の履修取り込みアダプタは、以下のオープンソースプロジェクトの公開実装を参考にしています。BUAA 間接参照: yinwoods/Fuck-BUAA-JiaoWu-Anyway; xunux/WeixinScoreGetter; SE2020-TopUnderstanding/BUAA-Campus-Tools-Frontend; LabiKyo/buaa-jwgl-evaluator; Yngu196/Schedule; wyx-1236/BUAA-Java-ACP。跨校(複数大学共通の基盤的)プロジェクトと単校(各校固有)プロジェクトの二層構造に整理し、単校カードはタップで展開して当該校が参考にした全ての学生プロジェクトを確認できます。
-
-跨校基盤的プロジェクト:WakeUp Schedule (YZune, Apache-2.0) および WakeupSchedule_BUPT (dIT8Zv, Apache-2.0) — 12 種類の教育システムパーサー(強智系・旧正方・URP・青果・湖南科技大学等)と中間データ構造のリファレンス実装;WakeupSchedule_Kotlin (Apache-2.0) クラシック金智 EAMS;cqu.js(時光課程表重慶大学アダプタ)重慶大学ポータル REST;shiguang_warehouse (XingHeYuZhuan, MIT) 武漢理工大学 kcbcxby・クラシック EAMS・新正方グリッドビュー;zfn_api (openschoolcn, MPL-2.0) と FlowCourse (jiaweiyaya, GPL-3.0) 新正方 kbList 形式のクロスバリデーション;iwut (TokenTeam, AGPL-3.0、プロトコル形式のみ参考) 武漢理工大学のコマ割りマッピング;「上课」shangkeschedule (qiqqqqq517, Apache-2.0) と WakeUp Schedule 学校登録データは、リスト照合に活用。
-
-単校プロジェクト（1 校 1 カード、展開で明細）—— 合肥工業大学 HFUT:HFUT-Schedule (Chiu-xaH, MIT)、HfutOpenApi (BoynChan, MIT)、hfut_schedule_hacker (Aoi-cn)、django-hfut-auth (elonzh, MIT);東南大学 SEU:SEUTimetable (sakimidare, Apache-2.0)、Aetik-yue/hormone、luzy99/SEUAutoLogin;浙江大学 ZJU:zju-ical-py (Xecades, LGPL-2.1);中国科学技術大学 USTC:USTC-timetable-to-ics (1970633640);四川大学 SCU:ScuTimetable (Z-P-J);東北部大学 NEU:neu_wisedu2wakeup (CreamPig233)、PopulusYang/NeuTimetable、neucn/elise、RekaYOO/NEU-JWXT-Toolkit、PeterPtroc/neu-jwxt-to-wakeup、leavesvv-source/NEU-Timetable;重慶大学 CQU:321CQU/pymycqu、BillYang2016/CQU-class2ics、haowang02/CourseMonitor、LengerHu/CQU_classtabletoics、Hagb/cqu_timetable_new、VayneDuan/CQU-Grade-Monitor、weearc/cm-http-api、barryZZJ/course_to_calander_converter;武漢理工大学 WHUT:courseTable (acm910);電子科技大学 UESTC:MilLoong/UESTC-EAMS-Helper-App、MilLoong/UESTC-EAMS-Helper-Python、KaranocaVe/UESTCJWCWatchdog、whtsky/uestc-eams-cleartimeout-userscript、Sunmxt/UESTC-EAMS;広東工業大学 GDUT:N0tExpectErr0r/GDUT-ClassTimeTable、Richard-Zheng/GDUT-Schedule-ng、StarArchive/gdut-course-frontend、StarArchive/gdut-course-backend、HoneQ7/GDUT_iOS_Timetable;広東財経大学 GDUFE:jkgeekJack/Android-GDUFE-JWC-SDK-1.0.0、Kiteio/GDUFE-wrapper;広東金融学院 GDUf:Kiteio/Punica、gduf-finmind;広東外語外貿大学 GDUFS:yongjianzheng/Gdufszhushou、Crazioker/agency;広東医科大学 GDMU:ユーザー提供のキャプチャで zf_new プロトコル確定 (新正方 zftal-ui-v5 素 /kbcx/ パス)、docs/release-notes-v1.0.49.md 参照;長沙理工大学 CSUST:zHElEARN/CSUSTKit、CreaMakers/EduSpider、timeisthe/CSUSTDataGet、Julius-lq/EduAdminSystem、JS-CAUTION/csust-course-schedule;北京郵電大学 BUPT:helium777/bupt-course-grab、JmPotato/BUPT-Grader、Seizzzz/Auto-Login-BUPT;北京大学 PKU:zhongxinghong/PKUAutoElective、thezzisu/pku-elective、Hovennnnn/PKUAutoElective2023、Lihhan/AutoElective_4_PKU、AuYang261/PKU_Elective_Toolset;北京化工大学 BUCT:MarkYangKp/ZhengFangJY;北京航空航天大学 BUAA:APassbyDreg/BUAA_JW_Utils (Python 工具集, ieas2.1 选课 + 评教 URL 锚点)、SE2020-TopUnderstanding/BUAA-Campus-Tools-Backend (Python, jwxt-7001.e2.buaa.edu.cn/ieas2.1/kbcx/queryGrkb 课表 endpoint 实锤)、fondoger/buaa-teacher-evaluation (MIT, 一键评教 sso.buaa.edu.cn CAS)、Cauchy1412/BUAAGetCourse (Python 抢课脚本)、KKRainbow/JWOneShotEval (PHP, 校内 IP 锚点等价);北京林業大学 BJFU:Bloomberg2000/bjfu_course_ics_generator、Bloomberg2000/bjfu_util.py;安徽大学 AHU:Tonyseth/AHU_JW_GPA_Calculator;東北林業大学 NEFU:bboy-xp/nefu-crawler、heyMahalo/crouse_select;東華大学 DHU:tk.dcmmcc、Bad-086/DHU_CourseMonitor;雲南財経大学 YNUFE:NINIYOYYO/ynufe-campus-app、MiaoWuNYA/ynufeRealLogin;北京理工大学 BIT:BIT-Login (BIT101-dev);北京信息科技大学 BISTU:iBistu (ProjektMing);安徽建築大学 AHU-JZ:JdaAssist (CH4019, MIT);重慶邮电大学移通学院 CQYTU:CQYTZFCheckScores (xM3GAN, Apache-2.0);華南農業大学 SCAU:ScheduleXParser_SCAU (greyovo);斉魯工業大学 QLU:JW-spider (Zhy423310825);渤海大学 BHU:BohaiServiceDome (joun233);東北石油大学 NEPU:WeNEPU (cutiechi);南京理工大学 NUST:HeraldStudentCurriculum (idailylife)。
-
-</string>
-    <string name="about_license_detail">ライセンスと謝辞</string>
+    
+    
+    
+    
     <string name="license_page_title">ライセンスと謝辞</string>
     <string name="license_gpl_section">ライセンス</string>
     <string name="license_gpl_body">Sleepy はオープンソースのスマート時間割アプリです。ソースコードは GNU General Public License v3.0 の下で公開されています。誰でも自由に使用、改変、配布できます。GitHub での貢献を歓迎します。</string>
@@ -460,25 +456,25 @@
     <string name="license_attribution_note">一部の教务システム取り込みアダプタは、以下のオープンソースプロジェクトの公開実装を参考にしています。皆様に感謝申し上げます。</string>
     <string name="license_foundational_section">複数大学共通の基盤プロジェクト</string>
     <string name="license_perschool_section">大学別の謝辞</string>
-    <string name="about_update_check">自動的にアップデートを確認</string>
-    <string name="about_update_check_detail">起動時に GitHub Releases を確認し、新バージョンがあれば「について」ページ上部にバナーを表示します</string>
-    <string name="about_update_available">新バージョン %1$s があります — タップで表示</string>
-    <string name="about_license_title">オープンソース宣言</string>
-    <string name="about_source">ソースコード</string>
-    <string name="about_source_url">github.com/lingion/sleepy</string>
-    <string name="about_feedback">フィードバックと提案</string>
-    <string name="about_feedback_detail">GitHub Issue でバグやアイデアを報告するか、メールで作者に連絡できます</string>
-    <string name="about_feedback_github">GitHub Issue</string>
-    <string name="about_feedback_email">メール</string>
-    <string name="about_feedback_email_subject">[Sleepy フィードバック]</string>
-    <string name="about_feedback_email_body">問題やアイデアを説明してください：\n\n— 環境 —\n（任意）\n</string>
-    <string name="about_feedback_no_mail_app">メールアプリが見つかりません。GitHub Issue を使用してください。</string>
-    <string name="about_title">について</string>
-    <string name="about_update">更新を確認</string>
-    <string name="about_update_checking">更新を確認中…</string>
-    <string name="about_update_detail">GitHub が利用できない場合は、自動でミラーにフォールバックします</string>
-    <string name="about_version">バージョン情報</string>
-    <string name="about_version_detail">バージョン %1$s（ビルド %2$d）</string>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     <string name="action_cancel">キャンセル</string>
     <string name="action_confirm">OK</string>
     <string name="course_color">色</string>

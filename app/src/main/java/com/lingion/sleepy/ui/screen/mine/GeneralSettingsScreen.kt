@@ -26,6 +26,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -106,6 +107,7 @@ fun GeneralSettingsScreen(
     var widgetColorless by remember { mutableStateOf(AppPrefs.isWidgetColorless(context)) }
     var courseColorless by remember { mutableStateOf(AppPrefs.isCourseColorless(context)) }
     var widgetSeparator by remember { mutableStateOf(AppPrefs.isWidgetSeparator(context)) }
+    var glmKey by remember { mutableStateOf(AppPrefs.getGlmApiKey(context)) }
 
     // 显示项变更后立即刷小组件(管线自 AppearanceScreen 迁移保留)
     val widgetScope = remember { CoroutineScope(SupervisorJob() + Dispatchers.Default) }
@@ -605,7 +607,44 @@ fun GeneralSettingsScreen(
             // ── 分隔线 ──
             item { HorizontalDivider(color = colors.outlineVariant.copy(alpha = SleepyTheme.Alpha.hairline)) }
 
-            // ── 分组④ 语言 ──
+            // ── 分组④ AI 识图导入(智谱 API Key) ──
+            item {
+                SectionHeader(title = stringResource(R.string.ai_vision_import))
+            }
+            item {
+                SettingsCard(title = stringResource(R.string.settings_glm_key_title), expanded = "glmKey" in expandedSections, onToggle = { toggleSection("glmKey") }) {
+                    Text(
+                        text = stringResource(R.string.settings_glm_key_sub),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = colors.onSurfaceVariant,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    OutlinedTextField(
+                        value = glmKey,
+                        onValueChange = {
+                            glmKey = it
+                            AppPrefs.setGlmApiKey(context, it)
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = { Text(stringResource(R.string.settings_glm_key_placeholder), color = colors.onSurfaceVariant) },
+                        singleLine = true,
+                        shape = SleepyTheme.fieldShape,
+                        colors = SleepyTheme.fieldColors()
+                    )
+                    HorizontalDivider(color = colors.outlineVariant.copy(alpha = SleepyTheme.Alpha.hairline))
+                    Text(
+                        text = stringResource(R.string.settings_glm_key_get),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = colors.primary,
+                        modifier = Modifier.padding(top = 10.dp)
+                    )
+                }
+            }
+
+            // ── 分隔线 ──
+            item { HorizontalDivider(color = colors.outlineVariant.copy(alpha = SleepyTheme.Alpha.hairline)) }
+
+            // ── 分组⑤ 语言 ──
             item {
                 SectionHeader(title = stringResource(R.string.settings_language))
             }

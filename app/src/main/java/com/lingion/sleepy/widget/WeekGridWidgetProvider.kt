@@ -30,6 +30,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
+import kotlin.math.floor
 import kotlin.math.roundToInt
 
 /**
@@ -78,8 +79,13 @@ open class WeekGridWidgetProvider : AppWidgetProvider() {
         }
     }
 
+    override fun onDeleted(context: Context, ids: IntArray) {
+        for (id in ids) { com.lingion.sleepy.util.AppPrefs.clearWidgetPrefs(context, id) }
+        super.onDeleted(context, ids)
+    }
+
     private fun renderWidget(context: Context, awm: AppWidgetManager, widgetId: Int) {
-        var data = loadWeekData(context)
+        var data = loadWeekData(context, widgetId)
         val opts = awm.getAppWidgetOptions(widgetId)
         val density = context.resources.displayMetrics.density
 
@@ -132,6 +138,26 @@ open class WeekGridWidgetProvider : AppWidgetProvider() {
             return
         }
 
+        // v24 滚动分流: 高度不够放全部节次时 → 壳图(表头由 ListView paddingTop 固定) + WEEKGRID 滚动条带。
+        // 条件: 有表且至少 1 门课; 空态/学期末走原静态渲染(空状态行文案)。
+        if (data.hasTable && data.days.any { it.courses.isNotEmpty() }) {
+            val maxNode = weekGridMaxNode(data)
+            val bodyHdp = weekGridBodyHdp(hDp.toFloat())
+            if (weekGridNeedsScroll(bodyHdp, maxNode)) {
+                Log.d(TAG, "v24 scroll mode: id=$widgetId hDp=$hDp maxNode=$maxNode " +
+                    "bodyDp=$bodyHdp viewportRows=" +
+                    "${weekGridViewportRows(bodyHdp, maxNode)}")
+                val shell = renderBitmap(context, data, w, h)
+                RemoteViewsWidgetHelper.pushScrollable(
+                    context, awm, widgetId, TAG,
+                    layoutRes = R.layout.widget_scroll_weekgrid,
+                    shellBitmap = shell,
+                    scopeExtra = ScrollStripService.StripFactory.SCOPE_WEEKGRID
+                )
+                return
+            }
+        }
+
         val bmp = renderBitmap(context, data, w, h)
         val views = RemoteViews(context.packageName, R.layout.widget_bitmap_container)
         views.setImageViewBitmap(R.id.widget_bitmap, bmp)
@@ -148,6 +174,55 @@ open class WeekGridWidgetProvider : AppWidgetProvider() {
 
     companion object {
         private const val TAG = "WeekGridV19"
+
+        // ════ v24 网格滚动改造 — 几何常量(与 renderBitmap 内局部 dp 值同源, 勿单独改) ════
+        /** 内容左右上外边距 dp (renderBitmap: outerPad = dp(6f)) */
+        const val GRID_OUTER_PAD_DP = 6f
+        /** 星期表头行高 dp (renderBitmap: headH = dp(56f)) */
+        const val GRID_HEAD_H_DP = 56f
+        /** 横向间隙 dp (renderBitmap: gapH) */
+        const val GRID_GAP_H_DP = 1.5f
+        /** 表头区总高 dp = outerPad(6) + headH(56)。滚动档 ListView paddingTop 必须同值,
+         *  使表头固定区不进入滚动列表, 始终由壳图像素显示。 */
+        const val GRID_HEADER_TOP_DP = GRID_OUTER_PAD_DP + GRID_HEAD_H_DP
+        /** 单节行最小可读高 dp — 保证竖排课名至少完整显示 2 个汉字
+         *  (卡高44: 内容36 − 上下pad8 − 教室预留≈7.7 ≈ 28.3 ≥ 2×maxChar13)。 */
+        const val GRID_ROW_MIN_DP = 44f
+
+        /** 计算整周课表最大结束节次(行数), 与 renderBitmap 内部同逻辑 */
+        fun weekGridMaxNode(data: WeekData): Int {
+            val allSlots = parseTimeSlots(data.days.firstOrNull()?.timeJson ?: "")
+            return (data.days.flatMap { it.courses }
+                .maxOfOrNull { it.startNode + it.step - 1 } ?: allSlots.size)
+                .coerceAtLeast(1)
+        }
+
+        /** widget 容器中可画节次区域的纵向高度 dp (= 总高 − 上下边距 − 表头) */
+        fun weekGridBodyHdp(hDp: Float): Float =
+            (hDp - GRID_OUTER_PAD_DP * 2f - GRID_HEAD_H_DP).coerceAtLeast(0f)
+
+        /** 把 rows 行按既有几何均分得到的单行高 dp (含间隙, 与 renderBitmap slotH 同公式) */
+        fun weekGridRowHeightDp(bodyHdp: Float, rows: Int): Float =
+            if (rows <= 0) 0f
+            else ((bodyHdp - GRID_GAP_H_DP * (rows + 1)) / rows).coerceAtLeast(0f)
+
+        /** 是否需要滚动: 全量压满 maxNode 行后单行高低于最小可读高 → 超高进滚动档 */
+        fun weekGridNeedsScroll(bodyHdp: Float, maxNode: Int): Boolean =
+            weekGridRowHeightDp(bodyHdp, maxNode) < GRID_ROW_MIN_DP
+
+        /** 滚动档视口可见完整行数 (容器能容纳的最多行, 至少 1、至多 maxNode) */
+        fun weekGridViewportRows(bodyHdp: Float, maxNode: Int): Int {
+            if (maxNode <= 0) return 1
+            val rows = floor((bodyHdp - GRID_GAP_H_DP) / (GRID_ROW_MIN_DP + GRID_GAP_H_DP)).toInt()
+            return rows.coerceIn(1, maxNode)
+        }
+
+        /** 滚动档 body 内容高 dp (不含表头): 以视口行高铺满 maxNode 行, 每行 ≥ 最小可读高 */
+        fun weekGridScrollBodyContentDp(bodyHdp: Float, maxNode: Int): Float {
+            val vp = weekGridViewportRows(bodyHdp, maxNode)
+            val rowH = weekGridRowHeightDp(bodyHdp, vp).coerceAtLeast(GRID_ROW_MIN_DP)
+            return GRID_GAP_H_DP * (maxNode + 1) + rowH * maxNode
+        }
 
         fun renderBitmap(context: Context, data: WeekData, wPx: Int, hPx: Int): Bitmap {
             val density = context.resources.displayMetrics.density
@@ -478,12 +553,18 @@ open class WeekGridWidgetProvider : AppWidgetProvider() {
                             }
                         }
                     }
-                    // 截断后腾省略号高度: 从尾部逐字移除直到 … 放得下
+                    // 截断后腾省略号高度: 从尾部逐字移除直到 … 放得下。
+                    // v24 需求「课名至少完整显示 2 个字」: 腾位时至少保留 2 个可读单元
+                    // (CJK/PUNCT 逐字为 1 单元; LATIN 旋转组不可拆, 整组记 1 单元)。
+                    // 若保留 2 单元后 … 仍放不下 → 放弃省略号, 绝不回吐到只剩 1 个字。
+                    // (行高受 GRID_ROW_MIN_DP=44dp 保障时 nameAvailH≥28.3 ≥ 2×maxChar13, 恒满足)
                     var showEllipsis = truncated
                     if (truncated) {
-                        while (drawn.isNotEmpty() && cumH + ellipsisH > nameAvailH) {
+                        val minKeep = if (nameAvailH >= 2f * charSize) 2 else 1
+                        while (drawn.size > minKeep && cumH + ellipsisH > nameAvailH) {
                             cumH -= drawn.removeAt(drawn.size - 1).h
                         }
+                        showEllipsis = cumH + ellipsisH <= nameAvailH && drawn.isNotEmpty()
                         if (drawn.isEmpty()) showEllipsis = false  // 一个字都放不下 → 不画…
                     }
                     // v22: 极端矮卡(nameAvailH < charSize, 连一个最小字号字都放不下)
@@ -694,7 +775,7 @@ open class WeekGridWidgetProvider : AppWidgetProvider() {
             return (0.299 * r + 0.587 * g + 0.114 * b) / 255.0 < 0.55
         }
 
-        fun loadWeekData(context: Context): WeekData {
+        fun loadWeekData(context: Context, appWidgetId: Int = -1): WeekData {
             val today = LocalDate.now()
             val isSystemDark = (context.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
             val isDark = AppPrefs.isDarkMode(context, isSystemDark)
@@ -707,7 +788,8 @@ open class WeekGridWidgetProvider : AppWidgetProvider() {
                     val app = SleepyApp.get()
                     val repo = app.repository
                     // 选表逻辑统一走 WidgetTableResolver（默认表优先），避免与 App 选中表不同步
-                    val t = WidgetTableResolver.resolveCurrentTable()
+                    // v1.0.39: 有实例绑定表时按绑定表解析
+                    val t = WidgetTableResolver.resolveForWidget(appWidgetId)
                     val status = if (t != null)
                         DateUtils.semesterStatus(t.startDate, t.maxWeek, today)
                     else DateUtils.SemesterStatus.IN_RANGE
@@ -736,7 +818,7 @@ open class WeekGridWidgetProvider : AppWidgetProvider() {
                     WeekData(days = days, hasTable = true, isDark = isDark,
                         themeKey = themeKey,
                         showDate = showDate, visibleDays = visibleDays,
-                        semesterStatus = status)
+                        semesterStatus = status, tableName = t.name)
                 }
             } catch (e: Throwable) {
                 Log.e(TAG, "loadWeekData failed", e)

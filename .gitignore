@@ -32,3 +32,5 @@ q*.json
 docs/sop/release-sop.md
 docs/sop/jw-cross-verify-sop.md
 
+
+*.hprof

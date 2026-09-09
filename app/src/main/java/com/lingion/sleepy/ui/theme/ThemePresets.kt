@@ -26,7 +26,7 @@ object ThemePresets {
     const val KEY_SLATE = "slate"
     const val KEY_SYSTEM = "system"
 
-    /** 默认淡紫 — 保留 v1.0.6 行为 */
+    /** 默认浪漫蓝樱 — 2026-09-08 UI 主题改造（原淡紫） */
     val Default = ThemePreset(
         key = KEY_DEFAULT,
         nameRes = R.string.theme_name_default,

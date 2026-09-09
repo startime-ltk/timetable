@@ -55,8 +55,7 @@ fun MineScreen(
     onOpenAppearance: () -> Unit = {},
     onOpenGeneral: () -> Unit = {},
     onOpenExport: () -> Unit = {},
-    onOpenReminder: () -> Unit = {},
-    onOpenAbout: () -> Unit = {}
+    onOpenReminder: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
     val colors = SleepyTheme.colors
@@ -121,8 +120,6 @@ fun MineScreen(
                     SettingsItem(icon = Icons.Outlined.Palette, label = stringResource(R.string.mine_appearance), onClick = onOpenAppearance)
                     Divider()
                     SettingsItem(icon = Icons.Outlined.Tune, label = stringResource(R.string.mine_general), onClick = onOpenGeneral)
-                    Divider()
-                    SettingsItem(icon = Icons.Outlined.Info, label = stringResource(R.string.about_title), onClick = onOpenAbout)
                 }
             }
 

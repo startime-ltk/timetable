@@ -16,7 +16,7 @@ import java.io.File
 class DebugScheduleReceiver : android.content.BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         Log.d("CourseScheduler", "debug receiver entered action=${intent.action}")
-        if (intent.action != "com.lingion.sleepy.debug.SCHEDULE_NOW") return
+        if (intent.action != "com.startime.liuye.debug.SCHEDULE_NOW") return
         try {
             runBlocking {
                 SleepyApp.get().notificationScheduler.scheduleTodayBeforeClassAlarms()

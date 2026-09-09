@@ -43,6 +43,7 @@ object AppPrefs {
     const val KEY_BEFORE_CLASS_FLUID_PRIMARY = "before_class_fluid_primary" // name/time/room
     const val KEY_THEME = "theme_key"
     const val KEY_LANG = "language"
+    const val KEY_GLM_API_KEY = "glm_api_key" // 智谱清言 AI (open.bigmodel.cn) API Key — 本地明文存储, 仅用于 AI 识图导入请求头
     const val KEY_DISPLAY_MODE = "display_mode" // "node" or "time"
     const val KEY_GRID_SUB_INFO = "grid_sub_info" // "room" / "teacher" / "none" — 网格卡片副信息（周视图网格卡课程名下方那行；左栏已有节次，故此处不再显示节次/时间）
     const val KEY_CONFLICT_STYLE = "conflict_style" // "stack" / "fold" / "rail" — 冲突课程显示样式（网格视图同格冲突时；stack=叠层偏移, fold=折角揭示, rail=侧边竖轨, 默认 "rail"）
@@ -67,7 +68,6 @@ object AppPrefs {
     const val KEY_WEEK_TWO_COLUMN = "week_two_column" // bool default false — 周视图两栏开关, issue#8
     const val KEY_WEEK_TWO_COLUMN_MODE = "week_two_column_mode" // "days"=按天对半分 / "balance"=按课程数动态平衡, issue#8
     const val KEY_WEEK_HIDE_EMPTY_DAYS = "week_hide_empty_days" // bool default false — 周视图隐藏无课日(仅两栏下生效, issue#8)
-    const val KEY_UPDATE_CHECK_ENABLED = "update_check_enabled" // bool default true — 启动检查 GitHub releases latest
     const val KEY_HIGH_REFRESH = "high_refresh_rate" // bool default true — 窗口 preferredDisplayModeId 钉屏幕最高刷率(流畅优先); 关=跟随系统省电调度
     const val KEY_NAV_DOCK = "nav_dock" // bool default false — 底栏形态: false=贴底(通栏), true=悬浮药丸(Dock, 底边留距)
     const val KEY_THEME_MODE = "theme_mode"  // light/dark/system
@@ -214,6 +214,16 @@ object AppPrefs {
 
     fun setLanguage(ctx: Context, lang: String) {
         sp(ctx).edit().putString(KEY_LANG, lang).apply()
+    }
+
+    // ===== 智谱 AI API Key (AI 识图导入) =====
+    // 本地明文存储即可(需求允许), 仅在调用 open.bigmodel.cn 时放进 Authorization 头。
+
+    fun getGlmApiKey(ctx: Context): String =
+        sp(ctx).getString(KEY_GLM_API_KEY, "") ?: ""
+
+    fun setGlmApiKey(ctx: Context, value: String) {
+        sp(ctx).edit().putString(KEY_GLM_API_KEY, value.trim()).apply()
     }
 
     // ===== 显示模式：节次 / 时间 =====
@@ -544,12 +554,33 @@ object AppPrefs {
         sp(ctx).edit().putString(KEY_HOLIDAY_OVERRIDES, com.lingion.sleepy.util.HolidayRangeOps.encodeOverrides(ranges)).apply()
     }
 
-    // ===== 启动检查更新开关 =====
+    // ===== Widget instance-level prefs (per appWidgetId) =====
 
-    fun isUpdateCheckEnabled(ctx: Context): Boolean =
-        sp(ctx).getBoolean(KEY_UPDATE_CHECK_ENABLED, true)
+    /** Bound table id for a widget instance; null = follow app default table. */
+    fun getWidgetTableBinding(ctx: Context, appWidgetId: Int): Long? {
+        val v = sp(ctx).getLong("widget_table_binding_$appWidgetId", -1L)
+        return if (v >= 0) v else null
+    }
 
-    fun setUpdateCheckEnabled(ctx: Context, v: Boolean) {
-        sp(ctx).edit().putBoolean(KEY_UPDATE_CHECK_ENABLED, v).apply()
+    fun setWidgetTableBinding(ctx: Context, appWidgetId: Int, tableId: Long?) {
+        val e = sp(ctx).edit()
+        if (tableId == null) e.remove("widget_table_binding_$appWidgetId")
+        else e.putLong("widget_table_binding_$appWidgetId", tableId)
+        e.apply()
+    }
+
+    /** Day offset from today for Today widget date navigation (0 = today). */
+    fun getWidgetDayOffset(ctx: Context, appWidgetId: Int): Int =
+        sp(ctx).getInt("widget_day_offset_$appWidgetId", 0)
+
+    fun setWidgetDayOffset(ctx: Context, appWidgetId: Int, offset: Int) {
+        sp(ctx).edit().putInt("widget_day_offset_$appWidgetId", offset).apply()
+    }
+
+    fun clearWidgetPrefs(ctx: Context, appWidgetId: Int) {
+        val e = sp(ctx).edit()
+        e.remove("widget_table_binding_$appWidgetId")
+        e.remove("widget_day_offset_$appWidgetId")
+        e.apply()
     }
 }

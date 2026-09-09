@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- v1.0.39 Today 日期导航静态布局: Canvas bitmap + 顶部 ‹ / 回今天 / › 透明按钮热区。
+     按钮覆盖标题行(顶部 48dp); bitmap 剩余区域保留点击打开 App(与 widget_bitmap_container 原行为一致)。 -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/widget_bitmap"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:adjustViewBounds="false" />
+
+    <ImageView
+        android:id="@+id/today_btn_prev"
+        android:layout_width="56dp"
+        android:layout_height="48dp"
+        android:layout_gravity="top|left"
+        android:importantForAccessibility="no" />
+
+    <ImageView
+        android:id="@+id/today_btn_today"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_gravity="top|left"
+        android:layout_marginLeft="56dp"
+        android:layout_marginRight="56dp"
+        android:importantForAccessibility="no" />
+
+    <ImageView
+        android:id="@+id/today_btn_next"
+        android:layout_width="56dp"
+        android:layout_height="48dp"
+        android:layout_gravity="top|right"
+        android:importantForAccessibility="no" />
+</FrameLayout>

@@ -10,7 +10,7 @@ android {
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.lingion.sleepy"
+        applicationId = "com.startime.liuye"
         minSdk = 26
         targetSdk = 37
         versionCode = 52

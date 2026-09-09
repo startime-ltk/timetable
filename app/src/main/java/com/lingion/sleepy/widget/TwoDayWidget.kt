@@ -29,7 +29,7 @@ open class TwoDayWidgetReceiver : AppWidgetProvider() {
     open val variantHint: WidgetVariant = WidgetVariant.REGULAR
 
     private fun push(context: Context, awm: AppWidgetManager, id: Int) {
-        val data = loadDataSync(context)
+        val data = loadDataSync(context, id)
         val opts = awm.getAppWidgetOptions(id)
         val (wDp, hDp) = RemoteViewsWidgetHelper.computeSizeDp(opts)
         val contentH = WidgetBitmapRenderers.twoDayContentHeightDp(data)
@@ -77,13 +77,18 @@ open class TwoDayWidgetReceiver : AppWidgetProvider() {
         }
     }
 
+    override fun onDeleted(context: Context, ids: IntArray) {
+        for (id in ids) { com.lingion.sleepy.util.AppPrefs.clearWidgetPrefs(context, id) }
+        super.onDeleted(context, ids)
+    }
+
     companion object {
         private const val TAG = "TwoDayRV"
 
         /**
-         * 同步版数据加载 — 今天 + 明天课程。
+         * 同步版数据加载 — 今天 + 明天课程。v1.0.39: appWidgetId ≥ 0 时解析实例绑定表。
          */
-        fun loadDataSync(context: Context): TwoDayData {
+        fun loadDataSync(context: Context, appWidgetId: Int = -1): TwoDayData {
             val today = LocalDate.now()
             val tomorrow = today.plusDays(1)
             val isSystemDark = (context.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
@@ -93,7 +98,7 @@ open class TwoDayWidgetReceiver : AppWidgetProvider() {
                 runBlocking {
                     val app = SleepyApp.get()
                     val repo = app.repository
-                    val table = WidgetTableResolver.resolveCurrentTable()
+                    val table = WidgetTableResolver.resolveForWidget(appWidgetId)
                     if (table == null) {
                         TwoDayData(days = emptyList(), hasTable = false, isDark = isDark, themeKey = themeKey)
                     } else {
@@ -116,7 +121,8 @@ open class TwoDayWidgetReceiver : AppWidgetProvider() {
                             hasTable = true,
                             isDark = isDark,
                             themeKey = themeKey,
-                            semesterStatus = status
+                            semesterStatus = status,
+                            tableName = table.name
                         )
                     }
                 }

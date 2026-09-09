@@ -36,7 +36,9 @@ data class WidgetData(
     /** 跟 app 主题色（ThemePresets key） */
     val themeKey: String = ThemePresets.KEY_DEFAULT,
     /** 学期状态（v1.0.37）: 学期外时 Today 渲染状态文案不渲染课程 */
-    val semesterStatus: DateUtils.SemesterStatus = DateUtils.SemesterStatus.IN_RANGE
+    val semesterStatus: DateUtils.SemesterStatus = DateUtils.SemesterStatus.IN_RANGE,
+    /** 绑定的课表名(空 = 未绑定/跟随默认), 渲染端可选在标题区展示 */
+    val tableName: String = ""
 ) {
     val dayName: String get() = DateUtils.localizedDay(date.dayOfWeek.value, com.lingion.sleepy.SleepyApp.get())
     val dateLabel: String get() = "${date.monthValue}/${date.dayOfMonth}"
@@ -50,15 +52,15 @@ data class WidgetData(
  * (课程底色实际走 CourseColorUtil 黄金角 HSL), 已随 CoursePalette 死属性一并删除。
  */
 data class WidgetScheme(
-    val bg: Color = Color(0xFFFDFCFF),
-    val surface: Color = Color(0xFFFFFBFE),
-    val primary: Color = Color(0xFF6750A4),
-    val primaryContainer: Color = Color(0xFFEADDFF),
-    val onPrimaryContainer: Color = Color(0xFF1C1B1F),
-    val onSurface: Color = Color(0xFF1C1B1F),
-    val onSurfaceVariant: Color = Color(0xFF79747E),
-    val surfaceContainer: Color = Color(0xFFF3EDF7),
-    val surfaceVariant: Color = Color(0xFFE7E0EC),
+    val bg: Color = Color(0xFFF2F9FF),
+    val surface: Color = Color(0xFFF2F9FF),
+    val primary: Color = Color(0xFFE388A8),
+    val primaryContainer: Color = Color(0xFFFFD9E4),
+    val onPrimaryContainer: Color = Color(0xFF3B0024),
+    val onSurface: Color = Color(0xFF16202B),
+    val onSurfaceVariant: Color = Color(0xFF43515E),
+    val surfaceContainer: Color = Color(0xFFE4EEF8),
+    val surfaceVariant: Color = Color(0xFFDCECF8),
     val isDark: Boolean = false
 )
 
@@ -135,7 +137,9 @@ data class WeekData(
     val showDate: Boolean = false,
     val visibleDays: Set<Int> = (1..7).toSet(),
     /** 学期状态（v1.0.37）: 学期外时列头加状态行 */
-    val semesterStatus: DateUtils.SemesterStatus = DateUtils.SemesterStatus.IN_RANGE
+    val semesterStatus: DateUtils.SemesterStatus = DateUtils.SemesterStatus.IN_RANGE,
+    /** 绑定的课表名(空 = 未绑定/跟随默认) */
+    val tableName: String = ""
 )
 
 /** 两天视图数据 */
@@ -145,5 +149,7 @@ data class TwoDayData(
     val isDark: Boolean = false,
     val themeKey: String = ThemePresets.KEY_DEFAULT,
     /** 学期状态（v1.0.37）: 学期外时渲染状态文案不渲染课程 */
-    val semesterStatus: DateUtils.SemesterStatus = DateUtils.SemesterStatus.IN_RANGE
+    val semesterStatus: DateUtils.SemesterStatus = DateUtils.SemesterStatus.IN_RANGE,
+    /** 绑定的课表名(空 = 未绑定/跟随默认) */
+    val tableName: String = ""
 )

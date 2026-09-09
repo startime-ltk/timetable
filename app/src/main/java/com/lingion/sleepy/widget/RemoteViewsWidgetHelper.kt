@@ -100,6 +100,7 @@ object RemoteViewsWidgetHelper {
      *
      * @param shellBitmap 壳图 (调用方用原渲染器按 wDp×hDp 渲染)
      * @param layoutRes 可滚动容器布局 (含 widget_shell + widget_strip_list)
+     * @param afterBuild 可选: 在 updateAppWidget 前对最终 RemoteViews 追加动作(如叠加导航按钮)
      */
     fun pushScrollable(
         context: Context,
@@ -108,7 +109,8 @@ object RemoteViewsWidgetHelper {
         tag: String,
         layoutRes: Int,
         shellBitmap: Bitmap,
-        scopeExtra: String
+        scopeExtra: String,
+        afterBuild: ((RemoteViews) -> Unit)? = null
     ) {
         val views = RemoteViews(context.packageName, layoutRes)
         views.setImageViewBitmap(R.id.widget_shell, shellBitmap)
@@ -129,6 +131,7 @@ object RemoteViewsWidgetHelper {
         )
         views.setPendingIntentTemplate(R.id.widget_strip_list, template)
 
+        afterBuild?.invoke(views)
         awm.updateAppWidget(widgetId, views)
         awm.notifyAppWidgetViewDataChanged(widgetId, R.id.widget_strip_list)
         shellBitmap.recycle()

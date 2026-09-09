@@ -55,8 +55,6 @@ import com.lingion.sleepy.ui.screen.mine.GeneralSettingsScreen
 import com.lingion.sleepy.ui.screen.mine.HolidaySettingsScreen
 import com.lingion.sleepy.ui.screen.mine.ExportScreen
 import com.lingion.sleepy.ui.screen.mine.ReminderScreen
-import com.lingion.sleepy.ui.screen.mine.AboutScreen
-import com.lingion.sleepy.ui.screen.mine.LicenseScreen
 import com.lingion.sleepy.ui.screen.schedule.ScheduleScreen
 import com.lingion.sleepy.ui.screen.today.TodayScreen
 import com.lingion.sleepy.ui.theme.SleepyTheme
@@ -100,8 +98,6 @@ class MainActivity : ComponentActivity() {
         // 高刷新率(流畅优先): 按开关把窗口钉到屏幕最高刷率, 不表态会被省电逻辑限 60Hz
         com.lingion.sleepy.util.HighRefreshRate.apply(this, com.lingion.sleepy.util.AppPrefs.isHighRefresh(this))
         handleDeepLinkIntent(intent)
-        // 启动时检查更新: 用户可在「关于」最底 Toggle 关闭
-        com.lingion.sleepy.util.UpdateNotifier.maybeCheckOnStart(this, lifecycleScope)
         setContent {
             val systemDark = androidx.compose.foundation.isSystemInDarkTheme()
             var themeMode by remember { mutableStateOf(AppPrefs.getThemeMode(this@MainActivity)) }
@@ -167,7 +163,7 @@ private enum class Tab(val labelRes: Int, val icon: ImageVector) {
 }
 
 private enum class OverlayScreen {
-    AddCourse, AllTables, EditTable, Theme, General, Holiday, Export, Reminder, About, License
+    AddCourse, AllTables, EditTable, Theme, General, Holiday, Export, Reminder
 }
 
 @Composable
@@ -299,14 +295,6 @@ private fun AppRoot(
         ReminderScreen(onBack = { popOverlay() })
         return
     }
-    if (topOverlay() == OverlayScreen.About) {
-        AboutScreen(onBack = { popOverlay() }, onOpenLicense = { pushOverlay(OverlayScreen.License) })
-        return
-    }
-    if (topOverlay() == OverlayScreen.License) {
-        LicenseScreen(onBack = { popOverlay() })
-        return
-    }
 
     // 底栏双形态(用户 2026-09-04 定版):
     // 贴底 = Scaffold bottomBar 占位(原样, 内容止于栏上沿);
@@ -411,14 +399,13 @@ private fun MainTabs(
         Tab.Today -> TodayScreen(onEditCourse = { course -> editingCourse(course) })
         Tab.Manage -> {
             val ctx = LocalContext.current
-            ManagementPage(autoShowImportSheet = MainActivity.pendingImportText != null, onJwImportRequested = { ctx.startActivity(Intent(ctx, com.lingion.sleepy.ui.screen.imports.JwImportActivity::class.java)) }, onCreateNewTableRequested = onCreateNewTable, onManualAdd = { pushOverlay(OverlayScreen.AddCourse) }, onEditCurrentTable = { pushOverlay(OverlayScreen.EditTable) }, onImported = { setCurrentTab(Tab.Schedule) })
+            ManagementPage(autoShowImportSheet = MainActivity.pendingImportText != null, onJwImportRequested = { ctx.startActivity(Intent(ctx, com.lingion.sleepy.ui.screen.imports.JwImportActivity::class.java)) }, onCreateNewTableRequested = onCreateNewTable, onManualAdd = { pushOverlay(OverlayScreen.AddCourse) }, onEditCurrentTable = { pushOverlay(OverlayScreen.EditTable) }, onShareExportRequested = { pushOverlay(OverlayScreen.Export) }, onImported = { setCurrentTab(Tab.Schedule) })
         }
         Tab.Mine -> MineScreen(
             onOpenAllTables = { pushOverlay(OverlayScreen.AllTables) },
             onOpenAppearance = { pushOverlay(OverlayScreen.Theme) },
             onOpenGeneral = { pushOverlay(OverlayScreen.General) },
             onOpenExport = { pushOverlay(OverlayScreen.Export) },
-            onOpenReminder = { pushOverlay(OverlayScreen.Reminder) },
-            onOpenAbout = { pushOverlay(OverlayScreen.About) })
+            onOpenReminder = { pushOverlay(OverlayScreen.Reminder) })
     }
 }

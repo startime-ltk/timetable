@@ -5,8 +5,10 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context.CLIPBOARD_SERVICE
 import android.net.Uri
+import androidx.core.content.FileProvider
 import com.lingion.sleepy.BuildConfig
 import org.json.JSONArray
+import java.io.File
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -36,10 +38,13 @@ import androidx.compose.material.icons.outlined.ExpandLess
 import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material.icons.outlined.FileUpload
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.PhotoCamera
+import androidx.compose.material.icons.outlined.PhotoLibrary
 import androidx.compose.material.icons.outlined.QrCode2
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -76,6 +81,8 @@ import com.lingion.sleepy.data.entity.CourseEntity
 import com.lingion.sleepy.data.entity.TimeTableEntity
 import com.lingion.sleepy.util.DateUtils
 import com.lingion.sleepy.util.TimeTableUtils
+import com.lingion.sleepy.util.AppPrefs
+import com.lingion.sleepy.util.BigModelVision
 import com.lingion.sleepy.data.parser.ScheduleParser
 import com.lingion.sleepy.ui.component.DatePickerField
 import com.lingion.sleepy.ui.component.TimeSlotEditor
@@ -183,6 +190,55 @@ fun ImportSheet(
                 }
             }
         }
+    }
+
+    // ── AI 识图导入(智谱 glm-4v-plus): 拍照 / 相册 → 压缩 base64 → HTTP 请求 → 文本 → 走 buildImportPreview 预览 ──
+    var aiPickDialog by remember { mutableStateOf(false) }
+    var aiNoKeyDialog by remember { mutableStateOf(false) }
+    var aiProcessing by remember { mutableStateOf(false) }
+    var aiCaptureUri by remember { mutableStateOf<Uri?>(null) }
+
+    // 结果统一交预览: 复用现有解析/冲突/落库链路; 各失败分支给可读 snackbar
+    fun processAiImage(uri: Uri) {
+        val key = AppPrefs.getGlmApiKey(context)
+        if (key.isBlank()) {
+            aiNoKeyDialog = true
+            return
+        }
+        scope.launch {
+            aiProcessing = true
+            try {
+                val text = BigModelVision.recognizeSchedule(context, uri, key)
+                val p = buildImportPreview(text, state, context) { msg -> errorMsg = msg }
+                if (p != null) preview = p
+            } catch (e: BigModelVision.VisionError.Network) {
+                errorMsg = context.getString(R.string.ai_vision_err_network)
+            } catch (e: BigModelVision.VisionError.InvalidKey) {
+                errorMsg = context.getString(R.string.ai_vision_err_key)
+            } catch (e: BigModelVision.VisionError.BadContent) {
+                errorMsg = context.getString(R.string.ai_vision_err_parse)
+            } catch (e: BigModelVision.VisionError.Server) {
+                errorMsg = context.getString(R.string.ai_vision_err_server)
+            } catch (e: Throwable) {
+                android.util.Log.e("Sleepy", "ai vision import failed", e)
+                errorMsg = context.getString(R.string.ai_vision_err_network)
+            } finally {
+                aiProcessing = false
+            }
+        }
+    }
+
+    val aiCameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { ok: Boolean ->
+        if (ok) {
+            aiCaptureUri?.let { processAiImage(it) }
+        }
+    }
+    val aiGalleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let { processAiImage(it) }
     }
 
     LaunchedEffect(errorMsg) {
@@ -295,6 +351,16 @@ fun ImportSheet(
                 }
             )
 
+            // 行 3.5：AI 识图导入 — 拍照/相册选课表截图, 智谱视觉模型识别后走同一预览流程
+            ImportMethodRow(
+                icon = Icons.Outlined.PhotoCamera,
+                label = stringResource(R.string.ai_vision_import),
+                onClick = {
+                    if (AppPrefs.getGlmApiKey(context).isBlank()) aiNoKeyDialog = true
+                    else aiPickDialog = true
+                }
+            )
+
             Spacer(modifier = Modifier.height(20.dp))
 
             // 支持的导入类型
@@ -360,6 +426,93 @@ fun ImportSheet(
             }
         }
         }
+    }
+
+    // ── AI 识图导入相关弹窗 ──
+
+    // 未配置 API Key → 引导去 通用设置-智谱AI; 仅提示不崩溃
+    if (aiNoKeyDialog) {
+        AlertDialog(
+            onDismissRequest = { aiNoKeyDialog = false },
+            titleContentColor = colors.onSurface,
+            textContentColor = colors.onSurfaceVariant,
+            title = { Text(stringResource(R.string.ai_vision_no_key_title), style = MaterialTheme.typography.titleLarge) },
+            text = { Text(stringResource(R.string.ai_vision_no_key_msg), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant) },
+            confirmButton = {
+                TextButton(onClick = { aiNoKeyDialog = false }) { Text(stringResource(R.string.ok)) }
+            }
+        )
+    }
+
+    // 图片来源选择: 拍照 / 相册
+    if (aiPickDialog) {
+        AlertDialog(
+            onDismissRequest = { aiPickDialog = false },
+            titleContentColor = colors.onSurface,
+            textContentColor = colors.onSurfaceVariant,
+            title = { Text(stringResource(R.string.ai_vision_pick_source), style = MaterialTheme.typography.titleLarge) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().noRippleClickable {
+                            aiPickDialog = false
+                            val uri = newAiCaptureUri(context)
+                            aiCaptureUri = uri
+                            aiCameraLauncher.launch(uri)
+                        }.padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Outlined.PhotoCamera, null, tint = colors.primary, modifier = Modifier.size(20.dp))
+                        Column(modifier = Modifier.weight(1f).padding(start = 12.dp)) {
+                            Text(stringResource(R.string.ai_vision_take_photo), style = MaterialTheme.typography.bodyLarge, color = colors.onSurface)
+                            Text(stringResource(R.string.ai_vision_take_photo_sub), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+                        }
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth().noRippleClickable {
+                            aiPickDialog = false
+                            aiGalleryLauncher.launch("image/*")
+                        }.padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Outlined.PhotoLibrary, null, tint = colors.primary, modifier = Modifier.size(20.dp))
+                        Column(modifier = Modifier.weight(1f).padding(start = 12.dp)) {
+                            Text(stringResource(R.string.ai_vision_pick_gallery), style = MaterialTheme.typography.bodyLarge, color = colors.onSurface)
+                            Text(stringResource(R.string.ai_vision_pick_gallery_sub), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { aiPickDialog = false }) { Text(stringResource(R.string.cancel)) }
+            }
+        )
+    }
+
+    // AI 识别请求进行中(连接 60s/读 90s, 给用户可感知反馈)。收起进度窗不影响后台请求:
+    // 成功仍会弹预览, 失败由 snackbar 提示。
+    if (aiProcessing) {
+        AlertDialog(
+            onDismissRequest = { },
+            titleContentColor = colors.onSurface,
+            textContentColor = colors.onSurfaceVariant,
+            text = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = colors.primary,
+                        strokeWidth = 3.dp
+                    )
+                    Text(stringResource(R.string.ai_vision_importing), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { aiProcessing = false }) { Text(stringResource(R.string.cancel)) }
+            }
+        )
     }
 
     // 格式详情弹窗 ("支持格式"每行 ⓘ 点开)
@@ -466,6 +619,17 @@ fun ImportSheet(
             )
         }
     }
+}
+
+/**
+ * TakePicture 写入的临时照片: 放到 app 私有 cacheDir/image 并让 FileProvider 共享读取;
+ * 走 activity result 前先把该 uri 存进 state, 回调里用它做识别。
+ */
+private fun newAiCaptureUri(context: Context): Uri {
+    val dir = File(context.cacheDir, "ai_vision")
+    if (!dir.exists()) dir.mkdirs()
+    val file = File(dir, "capture_${System.currentTimeMillis()}.jpg")
+    return FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".fileprovider", file)
 }
 
 @Composable

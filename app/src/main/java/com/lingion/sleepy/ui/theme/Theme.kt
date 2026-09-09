@@ -75,79 +75,81 @@ data class WakeUpColorScheme(
 )
 
 val LightScheme = WakeUpColorScheme(
-    primary = Color(0xFF6750A4),
-    onPrimary = Color.White,
-    primaryContainer = Color(0xFFEADDFF),
-    onPrimaryContainer = Color(0xFF21005D),
+    // 浪漫蓝 + 樱花粉 — 2026-09-08 UI 主题改造
+    primary = Color(0xFFE388A8),          // 樱花粉
+    onPrimary = Color(0xFF4A0520),        // 粉底上的深酒红文字（高对比）
+    primaryContainer = Color(0xFFFFD9E4), // 浅粉容器
+    onPrimaryContainer = Color(0xFF3B0024),
 
-    secondary = Color(0xFF625B71),
+    secondary = Color(0xFF55788F),        // 雾蓝
     onSecondary = Color.White,
-    secondaryContainer = Color(0xFFE8DEF8),
-    onSecondaryContainer = Color(0xFF1D192B),
+    secondaryContainer = Color(0xFFD3E4F5),
+    onSecondaryContainer = Color(0xFF0E2A3C),
 
-    tertiary = Color(0xFF7D5260),
+    tertiary = Color(0xFF8E6A9C),         // 淡粉紫
     onTertiary = Color.White,
-    tertiaryContainer = Color(0xFFFFD8E4),
-    onTertiaryContainer = Color(0xFF31111D),
+    tertiaryContainer = Color(0xFFF6D9FF),
+    onTertiaryContainer = Color(0xFF35013F),
 
-    background = Color(0xFFFEF7FF),
-    onBackground = Color(0xFF1D1B20),
-    surface = Color(0xFFFEF7FF),
-    onSurface = Color(0xFF1D1B20),
-    surfaceVariant = Color(0xFFE7E0EC),
-    onSurfaceVariant = Color(0xFF49454F),
+    background = Color(0xFFEAF5FE),       // 浪漫浅蓝天空
+    onBackground = Color(0xFF17212B),
+    surface = Color(0xFFF2F9FF),
+    onSurface = Color(0xFF16202B),
+    surfaceVariant = Color(0xFFDCECF8),
+    onSurfaceVariant = Color(0xFF43515E),
     surfaceContainerLowest = Color(0xFFFFFFFF),
-    surfaceContainerLow = Color(0xFFF7F2FA),
-    surfaceContainer = Color(0xFFF3EDF7),
-    surfaceContainerHigh = Color(0xFFECE6F0),
-    surfaceContainerHighest = Color(0xFFE6E0E9),
+    surfaceContainerLow = Color(0xFFEAF4FC),
+    surfaceContainer = Color(0xFFE4EEF8),
+    surfaceContainerHigh = Color(0xFFDFE9F3),
+    surfaceContainerHighest = Color(0xFFD9E4EF),
 
-    outline = Color(0xFF79747E),
-    outlineVariant = Color(0xFFCAC4D0),
+    outline = Color(0xFF73828E),
+    outlineVariant = Color(0xFFC1D1DE),
     scrim = Color(0xFF000000),
 
-    error = Color(0xFFB3261E),
+    error = Color(0xFFBA1A1A),
     onError = Color.White,
-    errorContainer = Color(0xFFF9DEDC),
-    onErrorContainer = Color(0xFF410E0B)
+    errorContainer = Color(0xFFFFDAD6),
+    onErrorContainer = Color(0xFF410002)
 )
 
 val DarkScheme = WakeUpColorScheme(
-    primary = Color(0xFFD0BCFF),
-    onPrimary = Color(0xFF381E72),
-    primaryContainer = Color(0xFF4F378B),
-    onPrimaryContainer = Color(0xFFEADDFF),
+    // 深夜蓝 + 樱花粉 — 2026-09-08 UI 主题改造
+    primary = Color(0xFFFFB0CC),          // 浅樱花粉
+    onPrimary = Color(0xFF581A33),
+    primaryContainer = Color(0xFF7A2E4C),
+    onPrimaryContainer = Color(0xFFFFD9E4),
 
-    secondary = Color(0xFFCCC2DC),
-    onSecondary = Color(0xFF332D41),
-    secondaryContainer = Color(0xFF4A4458),
-    onSecondaryContainer = Color(0xFFE8DEF8),
+    secondary = Color(0xFFAECBE3),        // 夜空蓝灰
+    onSecondary = Color(0xFF193342),
+    secondaryContainer = Color(0xFF304A5B),
+    onSecondaryContainer = Color(0xFFD3E4F5),
 
-    tertiary = Color(0xFFEFB8C8),
-    onTertiary = Color(0xFF492532),
-    tertiaryContainer = Color(0xFF633B48),
-    onTertiaryContainer = Color(0xFFFFD8E4),
+    tertiary = Color(0xFFE0BBEA),         // 夜樱紫
+    onTertiary = Color(0xFF3E2350),
+    tertiaryContainer = Color(0xFF593A6B),
+    onTertiaryContainer = Color(0xFFF6D9FF),
 
-    background = Color(0xFF141218),
-    onBackground = Color(0xFFE6E0E9),
-    surface = Color(0xFF141218),
-    onSurface = Color(0xFFE6E0E9),
-    surfaceVariant = Color(0xFF49454F),
-    onSurfaceVariant = Color(0xFFCAC4D0),
-    surfaceContainerLowest = Color(0xFF0F0D13),
-    surfaceContainerLow = Color(0xFF1D1B20),
-    surfaceContainer = Color(0xFF211F26),
-    surfaceContainerHigh = Color(0xFF2B2930),
-    surfaceContainerHighest = Color(0xFF36343B),
+    background = Color(0xFF0F1722),       // 深邃夜空蓝
+    onBackground = Color(0xFFE0E7F0),
+    surface = Color(0xFF141E2A),
+    onSurface = Color(0xFFE2E8F2),
+    surfaceVariant = Color(0xFF43515E),
+    onSurfaceVariant = Color(0xFFC3D0DC),
+    surfaceContainerLowest = Color(0xFF090F19),
+    surfaceContainerLow = Color(0xFF18222E),
+    surfaceContainer = Color(0xFF1C2734),
+    surfaceContainerHigh = Color(0xFF27313E),
+    surfaceContainerHighest = Color(0xFF313C4A),
 
-    outline = Color(0xFF938F99),
-    outlineVariant = Color(0xFF49454F),
+    outline = Color(0xFF8E9BA8),
+    outlineVariant = Color(0xFF43515E),
     scrim = Color(0xFF000000),
 
-    error = Color(0xFFF2B8B5),
-    onError = Color(0xFF601410),
-    errorContainer = Color(0xFF8C1D18),
-    onErrorContainer = Color(0xFFF9DEDC)
+    error = Color(0xFFFFB4AB),
+    onError = Color(0xFF690005),
+    errorContainer = Color(0xFF93000A),
+    onErrorContainer = Color(0xFFFFDAD6)
 )
 
 /**

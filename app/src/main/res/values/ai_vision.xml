@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- AI 识图导入(智谱清言视觉模型)文案。注意: 与 strings.xml 同约定, 多行模板用 \n 字面量, 使用时手动还原。 -->
+<resources>
+    <string name="ai_vision_import">AI 识图导入</string>
+    <string name="ai_vision_import_hint">拍照或选课表截图，AI 自动识别后导入</string>
+    <string name="ai_vision_pick_source">选择图片来源</string>
+    <string name="ai_vision_take_photo">拍照</string>
+    <string name="ai_vision_take_photo_sub">对准课表截图拍摄</string>
+    <string name="ai_vision_pick_gallery">从相册选择</string>
+    <string name="ai_vision_pick_gallery_sub">选择已保存的课表截图</string>
+    <string name="ai_vision_importing">AI 识别中，请稍候…</string>
+    <string name="ai_vision_no_key_title">未配置智谱 API Key</string>
+    <string name="ai_vision_no_key_msg">请先到「我的 → 通用设置 → AI 识图导入」填写 API Key（可在 open.bigmodel.cn 获取），再使用 AI 识图导入。</string>
+    <string name="ai_vision_err_network">网络连接失败，请检查网络后重试</string>
+    <string name="ai_vision_err_key">API Key 无效或已失效，请到「我的 → 通用设置 → AI 识图导入」检查更新</string>
+    <string name="ai_vision_err_server">识别服务暂时不可用，请稍后重试</string>
+    <string name="ai_vision_err_parse">未能从图片中识别出课表，请换一张更清晰的课表截图后重试</string>
+    <string name="settings_glm_key_title">智谱 AI · API Key</string>
+    <string name="settings_glm_key_sub">开启 AI 识图导入功能所需。Key 仅保存在本机，仅用于调用 open.bigmodel.cn 视觉模型。</string>
+    <string name="settings_glm_key_get">获取地址：open.bigmodel.cn</string>
+    <string name="settings_glm_key_placeholder">粘贴智谱 API Key</string>
+</resources>

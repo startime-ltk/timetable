@@ -101,6 +101,13 @@
             </intent-filter>
         </activity-alias>
 
+        <!-- v1.0.39: widget 添加时配置页 — 选择绑定课表 (android:configure 由 Launcher 以外部身份启动, 必须 exported=true) -->
+        <activity
+            android:name=".widget.WidgetConfigureActivity"
+            android:exported="true"
+            android:label="选择课表"
+            android:theme="@style/Theme.Sleepy" />
+
         <!-- App Widget Receivers -->
         <receiver
             android:name=".widget.TodayWidgetReceiver"

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Sleepy Horario</string>
+    <string name="app_name">柳叶课程表</string>
     <string name="widget_today_label">Clases de hoy</string>
     <string name="widget_week_list_label">Esta semana (lista)</string>
     <string name="widget_week_grid_label">Esta semana (cuadrícula)</string>
@@ -26,6 +26,8 @@
     <string name="manage_current_table">Horario actual</string>
     <string name="manage_import">Importar</string>
     <string name="manage_import_sub">Importar desde archivo / texto / CSV</string>
+    <string name="manage_share_table">Compartir horario</string>
+    <string name="manage_share_table_sub">Exporta un archivo .sleepy; quien lo reciba podrá importarlo</string>
     <string name="manage_new_table">Nuevo horario</string>
     <string name="manage_new_table_sub">Crear un horario vacío, añadir cursos manualmente</string>
     <string name="manage_edit_current">Editar actual</string>
@@ -390,8 +392,8 @@
     <string name="end_label">Fin</string>
     <string name="delete_period">Eliminar este período</string>
 
-    <string name="mine_about">Acerca de</string>
-    <string name="mine_about_body">Sleepy Horario v%1$s\n\nUna aplicación de horario minimalista, limpia y local.\nTodos los datos se guardan en tu dispositivo — nada se sube a servidores.\n\n· Sin anuncios\n· Sin rastreo\n· Compatible con WakeUp / ICS / CSV / HTML / texto plano</string>
+    
+    
 
     <string-array name="day_names">
         <item>Lun</item>
@@ -407,7 +409,7 @@
     <string name="date_long_format">%1$d/%2$d</string>
     <string name="notif_title">Clases de hoy — %1$s %2$s</string>
     <string name="notif_text">Toca para ver el horario de hoy</string>
-    <string name="theme_name_default">Lila</string>
+    <string name="theme_name_default">Azul Sakura</string>
     <string name="theme_name_spring">Primavera</string>
     <string name="theme_name_ocean">Océano</string>
     <string name="theme_name_peach">Melocotón</string>
@@ -435,7 +437,7 @@
     <string name="appearance_section_theme">Colores del tema</string>
     <string name="appearance_section_display">Visualización de cursos</string>
     <string name="appearance_section_widget">Widget</string>
-    <string name="about_update_latest">Ya tienes la última versión v%1$s</string>
+    
     <string name="update_found_title">Nueva versión v%1$s disponible</string>
     <string name="update_download">Descargar</string>
     <string name="update_cancel">Cancelar</string>
@@ -443,14 +445,10 @@
     <string name="update_installing">Descarga completa, abriendo instalador</string>
     <string name="update_retry">Reintentar</string>
     <string name="update_download_failed">Error de descarga: %1$s</string>
-    <string name="about_author">Autor</string>
-    <string name="about_author_name">Lingion</string>
-    <string name="about_license_body">Partes de los adaptadores de importación de horarios de esta aplicación se basan en las implementaciones públicas de los siguientes proyectos de código abierto. Referencias indirectas de BUAA: yinwoods/Fuck-BUAA-JiaoWu-Anyway; xunux/WeixinScoreGetter; SE2020-TopUnderstanding/BUAA-Campus-Tools-Frontend; LabiKyo/buaa-jwgl-evaluator; Yngu196/Schedule; wyx-1236/BUAA-Java-ACP. Se organizan en dos niveles: proyectos transversales y proyectos específicos por universidad. Toca una tarjeta de universidad para expandir y ver todos los proyectos mantenidos por estudiantes referenciados para esa universidad.
-
-Proyectos transversales: WakeUp Schedule (YZune, Apache-2.0) y WakeupSchedule_BUPT (dIT8Zv, Apache-2.0) — implementaciones de referencia para doce analizadores de sistemas académicos (Qingzhi y variantes, Zhengfang antiguo, URP, Chengfang, HNUST); WakeupSchedule_Kotlin (Apache-2.0) para la importación clásica de EAMS de Wisedu; el adaptador cqu.js de Shiguang Schedule para el portal REST de la Universidad de Chongqing; shiguang_warehouse (XingHeYuZhuan, MIT) para kcbcxby de WHUT, EAMS clásico y la vista de cuadrícula del nuevo Zhengfang; zfn_api (openschoolcn, MPL-2.0) y FlowCourse (jiaweiyaya, GPL-3.0) para la validación cruzada de kbList del nuevo Zhengfang; iwut (TokenTeam, AGPL-3.0, solo forma del protocolo) para el mapeo de secciones de WHUT; Shangke Schedule shangkeschedule (qiqqqqq517, Apache-2.0) y los registros de escuelas de WakeUp Schedule usados para contrastar nuestra lista.
-
-Agradecimientos por universidad (una tarjeta por universidad, expandir para ver detalles) — Universidad Tecnológica de Hefei HFUT: HFUT-Schedule (Chiu-xaH, MIT), HfutOpenApi (BoynChan, MIT), hfut_schedule_hacker (Aoi-cn), django-hfut-auth (elonzh, MIT); Universidad del Sudeste SEU: SEUTimetable (sakimidare, Apache-2.0), Aetik-yue/hormone, luzy99/SEUAutoLogin; Universidad de Zhejiang ZJU: zju-ical-py (Xecades, LGPL-2.1); USTC: USTC-timetable-to-ics (1970633640); Universidad de Sichuán SCU: ScuTimetable (Z-P-J); Universidad del Noreste NEU: neu_wisedu2wakeup (CreamPig233), PopulusYang/NeuTimetable, neucn/elise, RekaYOO/NEU-JWXT-Toolkit, PeterPtroc/neu-jwxt-to-wakeup, leavesvv-source/NEU-Timetable; Universidad de Chongqing CQU: 321CQU/pymycqu, BillYang2016/CQU-class2ics, haowang02/CourseMonitor, LengerHu/CQU_classtabletoics, Hagb/cqu_timetable_new, VayneDuan/CQU-Grade-Monitor, weearc/cm-http-api, barryZZJ/course_to_calander_converter; Universidad Tecnológica de Wuhan WHUT: courseTable (acm910); UESTC: MilLoong/UESTC-EAMS-Helper-App, MilLoong/UESTC-EAMS-Helper-Python, KaranocaVe/UESTCJWCWatchdog, whtsky/uestc-eams-cleartimeout-userscript, Sunmxt/UESTC-EAMS; Universidad Tecnológica de Guangdong GDUT: N0tExpectErr0r/GDUT-ClassTimeTable, Richard-Zheng/GDUT-Schedule-ng, StarArchive/gdut-course-frontend, StarArchive/gdut-course-backend, HoneQ7/GDUT_iOS_Timetable; Universidad de Finanzas y Economía de Guangdong GDUFE: jkgeekJack/Android-GDUFE-JWC-SDK-1.0.0, Kiteio/GDUFE-wrapper; Universidad de Finanzas de Guangdong GDUf: Kiteio/Punica, gduf-finmind; Universidad de Estudios Extranjeros de Guangdong GDUFS: yongjianzheng/Gdufszhushou, Crazioker/agency; Universidad Médica de Guangdong GDMU: paquete de captura provisto por el usuario confirma el protocolo zf_new (nuevo ZhengFang zftal-ui-v5 con ruta desnuda /kbcx/), véase docs/release-notes-v1.0.49.md; Universidad de Ciencia y Tecnología de Changsha CSUST: zHElEARN/CSUSTKit, CreaMakers/EduSpider, timeisthe/CSUSTDataGet, Julius-lq/EduAdminSystem, JS-CAUTION/csust-course-schedule; Universidad de Correos y Telecomunicaciones de Pekín BUPT: helium777/bupt-course-grab, JmPotato/BUPT-Grader, Seizzzz/Auto-Login-BUPT; Universidad de Pekín PKU: zhongxinghong/PKUAutoElective, thezzisu/pku-elective, Hovennnnn/PKUAutoElective2023, Lihhan/AutoElective_4_PKU, AuYang261/PKU_Elective_Toolset; Universidad de Tecnología Química de Pekín BUCT: MarkYangKp/ZhengFangJY; BUAA (Beihang): APassbyDreg/BUAA_JW_Utils (Python toolkit, ieas2.1 course-select + evaluation URL anchors), SE2020-TopUnderstanding/BUAA-Campus-Tools-Backend (Python, jwxt-7001.e2.buaa.edu.cn/ieas2.1/kbcx/queryGrkb schedule endpoint), fondoger/buaa-teacher-evaluation (MIT, one-click evaluation via sso.buaa.edu.cn CAS), Cauchy1412/BUAAGetCourse (Python course-grabber script), KKRainbow/JWOneShotEval (PHP, intra-campus IP anchor); Universidad Forestal de Pekín BJFU: Bloomberg2000/bjfu_course_ics_generator, Bloomberg2000/bjfu_util.py; Universidad de Anhui AHU: Tonyseth/AHU_JW_GPA_Calculator; Universidad Forestal del Noreste NEFU: bboy-xp/nefu-crawler, heyMahalo/crouse_select; Universidad de Donghua DHU: tk.dcmmcc, Bad-086/DHU_CourseMonitor; Universidad de Finanzas y Economía de Yunnan YNUFE: NINIYOYYO/ynufe-campus-app, MiaoWuNYA/ynufeRealLogin; Instituto de Tecnología de Pekín BIT: BIT-Login (BIT101-dev); Universidad de Ciencia y Tecnología de la Información de Pekín BISTU: iBistu (ProjektMing); Universidad de Arquitectura de Anhui AHU-JZ: JdaAssist (CH4019, MIT); Colegio de Telecomunicaciones Móviles de Chongqing CQYTU: CQYTZFCheckScores (xM3GAN, Apache-2.0); Universidad Agrícola del Sur de China SCAU: ScheduleXParser_SCAU (greyovo); Universidad Tecnológica de Qilu QLU: JW-spider (Zhy423310825); Universidad de Bohai BHU: BohaiServiceDome (joun233); Universidad del Petróleo del Noreste NEPU: WeNEPU (cutiechi); Universidad de Ciencia y Tecnología de Nanjing NUST: HeraldStudentCurriculum (idailylife).</string>
-    <string name="about_license_detail">Licencia y agradecimientos</string>
+    
+    
+    
+    
     <string name="license_page_title">Licencia y agradecimientos</string>
     <string name="license_gpl_section">Licencia</string>
     <string name="license_gpl_body">Sleepy es una aplicación de horario escolar inteligente de código abierto. El código fuente se publica bajo la licencia GNU General Public License v3.0. Cualquiera puede usar, modificar y distribuir este software libremente. Las contribuciones a través de GitHub son bienvenidas.</string>
@@ -458,25 +456,25 @@ Agradecimientos por universidad (una tarjeta por universidad, expandir para ver 
     <string name="license_attribution_note">Partes de los adaptadores de importación de sistemas académicos hacen referencia a implementaciones públicas de los siguientes proyectos de código abierto, con agradecimiento a todos.</string>
     <string name="license_foundational_section">Proyectos transversales</string>
     <string name="license_perschool_section">Agradecimientos por universidad</string>
-    <string name="about_update_check">Buscar actualizaciones automáticamente</string>
-    <string name="about_update_check_detail">Comprueba GitHub Releases al iniciar; aparecerá un aviso en la página Acerca cuando haya una versión nueva</string>
-    <string name="about_update_available">Versión %1$s disponible — toca para ver</string>
-    <string name="about_license_title">Declaración de código abierto</string>
-    <string name="about_source">Código fuente</string>
-    <string name="about_source_url">github.com/lingion/sleepy</string>
-    <string name="about_feedback">Comentarios y sugerencias</string>
-    <string name="about_feedback_detail">Reporta errores o comparte ideas mediante un Issue de GitHub, o contacta al autor por correo</string>
-    <string name="about_feedback_github">Issue de GitHub</string>
-    <string name="about_feedback_email">Correo</string>
-    <string name="about_feedback_email_subject">[Sleepy Comentario]</string>
-    <string name="about_feedback_email_body">Por favor describe el problema o la idea:\n\n— Entorno —\n(opcional)\n</string>
-    <string name="about_feedback_no_mail_app">No se encontró ninguna app de correo. Usa un Issue de GitHub.</string>
-    <string name="about_title">Acerca de</string>
-    <string name="about_update">Buscar actualizaciones</string>
-    <string name="about_update_checking">Comprobando actualizaciones…</string>
-    <string name="about_update_detail">Si GitHub no está disponible, la app recurrirá automáticamente al espejo</string>
-    <string name="about_version">Versión</string>
-    <string name="about_version_detail">Versión %1$s (Compilación %2$d)</string>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     <string name="action_cancel">Cancelar</string>
     <string name="action_confirm">Aceptar</string>
     <string name="course_color">Color</string>

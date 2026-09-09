@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- AI vision import (Zhipu BigModel) strings. Multi-line templates use literal \n like strings.xml; restore manually before use. -->
+<resources>
+    <string name="ai_vision_import">AI Import from Photo</string>
+    <string name="ai_vision_import_hint">Take a photo or pick a timetable screenshot, AI recognizes and imports it</string>
+    <string name="ai_vision_pick_source">Choose image source</string>
+    <string name="ai_vision_take_photo">Take photo</string>
+    <string name="ai_vision_take_photo_sub">Point at the timetable screenshot</string>
+    <string name="ai_vision_pick_gallery">Choose from gallery</string>
+    <string name="ai_vision_pick_gallery_sub">Pick a saved timetable screenshot</string>
+    <string name="ai_vision_importing">AI recognizing, please wait…</string>
+    <string name="ai_vision_no_key_title">Zhipu API Key not configured</string>
+    <string name="ai_vision_no_key_msg">Please add your API Key first at Mine → General Settings → AI Import (get it from open.bigmodel.cn), then try AI import again.</string>
+    <string name="ai_vision_err_network">Network error, please check your connection and retry</string>
+    <string name="ai_vision_err_key">API Key is invalid or expired, please check it at Mine → General Settings → AI Import</string>
+    <string name="ai_vision_err_server">Recognition service is temporarily unavailable, please retry later</string>
+    <string name="ai_vision_err_parse">Could not recognize a timetable from this image, please try a clearer screenshot</string>
+    <string name="settings_glm_key_title">Zhipu AI · API Key</string>
+    <string name="settings_glm_key_sub">Required for AI import. The key is stored locally and only used to call the vision model at open.bigmodel.cn.</string>
+    <string name="settings_glm_key_get">Get a key at: open.bigmodel.cn</string>
+    <string name="settings_glm_key_placeholder">Paste your Zhipu API Key</string>
+</resources>

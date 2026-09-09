@@ -34,8 +34,10 @@ class ScrollStripService : RemoteViewsService() {
             const val EXTRA_WIDGET_ID = "widget_id"
             const val EXTRA_SCOPE = "scope"
             const val SCOPE_TODAY = "today"
+            const val SCOPE_TODAY_NAV = "today_nav"
             const val SCOPE_TWODAY = "twoday"
             const val SCOPE_WEEKLIST = "weeklist"
+            const val SCOPE_WEEKGRID = "weekgrid"
 
             /** 条带高度 dp — 行布局 widget_scroll_row.xml layout_height 必须同值 */
             const val STRIP_DP = 48
@@ -63,23 +65,55 @@ class ScrollStripService : RemoteViewsService() {
             val contentHdp: Float
             val full: Bitmap
             when (scope) {
+                SCOPE_TODAY_NAV -> {
+                    // v1.0.39 fix: Today nav 滚动档 — 条带与壳图同源(带 ‹› 箭头 + 居中标题/表名),
+                    // 之前漏传 showNav 导致条带头部像素与壳不一致(箭头/表名缺失)。
+                    val d = TodayWidgetReceiver.loadDataSync(context, widgetId)
+                    contentHdp = WidgetBitmapRenderers.todayContentHeightDp(d)
+                    val renderH = ceil(contentHdp / STRIP_DP) * STRIP_DP
+                    full = WidgetBitmapRenderers.renderToday(
+                        context, d, wDp.toFloat(), renderH, showNav = true)
+                }
                 SCOPE_TODAY -> {
-                    val d = TodayWidgetReceiver.loadDataSync(context)
+                    // WeekGrid 最小档滚动路径(showNav=false, 无箭头/无表名)
+                    val d = TodayWidgetReceiver.loadDataSync(context, widgetId)
                     contentHdp = WidgetBitmapRenderers.todayContentHeightDp(d)
                     val renderH = ceil(contentHdp / STRIP_DP) * STRIP_DP
                     full = WidgetBitmapRenderers.renderToday(context, d, wDp.toFloat(), renderH)
                 }
                 SCOPE_TWODAY -> {
-                    val d = TwoDayWidgetReceiver.loadDataSync(context)
+                    // v1.0.39 fix: 按 widget 实例解析绑定表(此前漏传 widgetId 回落默认表)
+                    val d = TwoDayWidgetReceiver.loadDataSync(context, widgetId)
                     contentHdp = WidgetBitmapRenderers.twoDayContentHeightDp(d)
                     val renderH = ceil(contentHdp / STRIP_DP) * STRIP_DP
                     full = WidgetBitmapRenderers.renderTwoDay(context, d, wDp.toFloat(), renderH)
                 }
                 SCOPE_WEEKLIST -> {
-                    val d = WeekListWidgetReceiver.loadDataSync(context)
+                    val d = WeekListWidgetReceiver.loadDataSync(context, widgetId)
                     contentHdp = WidgetBitmapRenderers.weekListContentHeightDp(context, d)
                     val renderH = ceil(contentHdp / STRIP_DP) * STRIP_DP
                     full = WidgetBitmapRenderers.renderWeekList(context, d, wDp.toFloat(), renderH)
+                }
+                SCOPE_WEEKGRID -> {
+                    // v24 WeekGrid 滚动档: 原渲染器按「表头 + 全展开节次区」画长图,
+                    // 裁掉固定表头(62dp)后横切 — 表头像素由壳图(壳布局顶部 padding 区)固定。
+                    val d = WeekGridWidgetProvider.loadWeekData(context, widgetId)
+                    val maxNode = WeekGridWidgetProvider.weekGridMaxNode(d)
+                    val bodyHdp = WeekGridWidgetProvider.weekGridBodyHdp(hDp.toFloat())
+                    contentHdp = WeekGridWidgetProvider.weekGridScrollBodyContentDp(bodyHdp, maxNode)
+                    // 长图总高 = 固定表头 + 内容高向上取整到条带倍数(末条带不缺角)
+                    val renderHdp = WeekGridWidgetProvider.GRID_HEADER_TOP_DP +
+                        ceil(contentHdp / STRIP_DP) * STRIP_DP
+                    val renderW = (wDp * density).toInt().coerceAtLeast((180 * density).toInt())
+                    val renderH = (renderHdp * density).toInt()
+                    val whole = WeekGridWidgetProvider.renderBitmap(context, d, renderW, renderH)
+                    // 裁掉表头区: 条带仅含节次内容; crop 起点 = ListView paddingTop(62dp)
+                    val topPx = (WeekGridWidgetProvider.GRID_HEADER_TOP_DP * density).toInt()
+                    full = if (whole.height > topPx) {
+                        Bitmap.createBitmap(whole, 0, topPx, whole.width, whole.height - topPx)
+                    } else {
+                        whole
+                    }
                 }
                 else -> return
             }

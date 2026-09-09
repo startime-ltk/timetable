@@ -29,7 +29,7 @@ open class WeekListWidgetReceiver : AppWidgetProvider() {
     open val variantHint: WidgetVariant = WidgetVariant.REGULAR
 
     private fun push(context: Context, awm: AppWidgetManager, id: Int) {
-        val data = loadDataSync(context)
+        val data = loadDataSync(context, id)
         val opts = awm.getAppWidgetOptions(id)
         val (wDp, hDp) = RemoteViewsWidgetHelper.computeSizeDp(opts)
         val contentH = WidgetBitmapRenderers.weekListContentHeightDp(context, data)
@@ -80,13 +80,19 @@ open class WeekListWidgetReceiver : AppWidgetProvider() {
         }
     }
 
+    override fun onDeleted(context: Context, ids: IntArray) {
+        for (id in ids) { com.lingion.sleepy.util.AppPrefs.clearWidgetPrefs(context, id) }
+        super.onDeleted(context, ids)
+    }
+
     companion object {
         private const val TAG = "WeekListRV"
 
         /**
          * 同步版数据加载 — 7 列日列课程。与 WeekGridWidgetProvider.loadWeekData 结构一致。
+         * v1.0.39: appWidgetId ≥ 0 时解析实例绑定表。
          */
-        fun loadDataSync(context: Context): WeekData {
+        fun loadDataSync(context: Context, appWidgetId: Int = -1): WeekData {
             val today = LocalDate.now()
             val isSystemDark = (context.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
             val isDark = com.lingion.sleepy.util.AppPrefs.isDarkMode(context, isSystemDark)
@@ -95,7 +101,7 @@ open class WeekListWidgetReceiver : AppWidgetProvider() {
                 runBlocking {
                     val app = SleepyApp.get()
                     val repo = app.repository
-                    val table = WidgetTableResolver.resolveCurrentTable()
+                    val table = WidgetTableResolver.resolveForWidget(appWidgetId)
                     if (table == null) {
                         WeekData(days = emptyList(), hasTable = false, isDark = isDark, themeKey = themeKey)
                     } else {
@@ -109,7 +115,7 @@ open class WeekListWidgetReceiver : AppWidgetProvider() {
                                 all.filter { it.inWeek(week) }.sortedBy { it.startNode }
                             DayData(date = date, dayOfWeek = dayOfWeek, courses = visible, timeJson = table.timeJson)
                         }
-                        WeekData(days = days, hasTable = true, isDark = isDark, themeKey = themeKey, semesterStatus = status)
+                        WeekData(days = days, hasTable = true, isDark = isDark, themeKey = themeKey, semesterStatus = status, tableName = table.name)
                     }
                 }
             } catch (_: Throwable) {

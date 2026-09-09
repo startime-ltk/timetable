@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- v24 可滚动 WeekGrid(网格滚动档) — 结构同 widget_scroll_today(壳图+条带 ListView),
+     但 ListView 顶部 paddingTop=62dp(= outerPad 6 + 星期表头 56), 与
+     WeekGridWidgetProvider.GRID_HEADER_TOP_DP 及条带 crop 起点严格同值:
+     表头区不进入滚动列表, 由壳图(按容器尺寸渲染的首屏图)像素固定 → 滑动时「星期几」固定不变,
+     节次区(ListView 内容)可下滑查看剩余课程。 -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_scroll_clip"
+    android:outlineProvider="background"
+    android:clipToOutline="true">
+    <ImageView
+        android:id="@+id/widget_shell"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:adjustViewBounds="false" />
+    <ListView
+        android:id="@+id/widget_strip_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="62dp"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:scrollbars="none"
+        android:cacheColorHint="@android:color/transparent"
+        android:listSelector="@android:color/transparent" />
+</FrameLayout>

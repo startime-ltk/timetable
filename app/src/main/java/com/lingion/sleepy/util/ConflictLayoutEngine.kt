@@ -122,9 +122,9 @@ object ConflictLayoutEngine {
 // LayerSortKey = (-step, startNode, id) — step 反转后升序 ≡ primaryComparator 的 step desc;
 // 例 1-3/1-4/4-6: 层 {1-3,4-6} 的 top = 1-3 → key(-3, 1, 1);
 //                层 {1-4} 的 top = 1-4 → key(-4, 1, 3)。
-// 升序排: (-4, 1, 3) < (-3, 1, 1) → {1-4} 先 → zRank 0 = 1-4 ✓
+// 升序排: (-4, 1, 3) < (-3, 1, 1) → {1-4} 先 → zRank 0 = 1-4
 // 例 1-3/1-3 完全重叠: 两层各一层, top key 都 = (-3, 1, id)。
-// 升序排: id=1 (-3,1,1) < id=2 (-3,1,2) → {id=1} 先 → zRank 0 = id=1 ✓
+// 升序排: id=1 (-3,1,1) < id=2 (-3,1,2) → {id=1} 先 → zRank 0 = id=1
         val defaultLayerOrder: List<List<CourseEntity>> = layers.sortedBy { g: List<CourseEntity> ->
             val top: CourseEntity = g.maxWith(primaryComparator)
             LayerSortKey(-top.step, top.startNode, top.id)

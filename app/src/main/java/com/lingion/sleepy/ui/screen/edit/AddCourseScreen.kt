@@ -593,8 +593,6 @@ fun AddCourseScreen(
     }
 }
 
-
-
 /** 编辑回填：按完整时段特征分组。周次/单双周参与分组，
  *  保证「同节次不同周次」回填成两个 block 而不是被错误合并。 */
 internal fun groupSlotsForEdit(courses: List<CourseEntity>): List<List<CourseEntity>> =

@@ -393,7 +393,7 @@ class JwEams5ParserTest {
         ]}]}
         """.trimIndent())
         val c = p.generateCourseList().single()
-        // JwParity.adjustedRange(1, 16, parity=1): startWeek=1 (奇数 ✓), endWeek=16 (不做收缩, 连续显示)
+        // JwParity.adjustedRange(1, 16, parity=1): startWeek=1 (奇数), endWeek=16 (不做收缩, 连续显示)
         assertEquals("1-16单 startWeek=1", 1, c.startWeek)
         assertEquals("1-16单 endWeek=16 (JwParity 不收缩 endWeek)", 16, c.endWeek)
         assertEquals("1-16单 type=1 (Sleepy 单周)", 1, c.type)
@@ -408,7 +408,7 @@ class JwEams5ParserTest {
         ]}]}
         """.trimIndent())
         val c = p.generateCourseList().single()
-        // startWeek=2 (偶数 ✓), endWeek=15 (JwParity 不收缩, UI 连续显示)
+        // startWeek=2 (偶数), endWeek=15 (JwParity 不收缩, UI 连续显示)
         assertEquals("2-15双 startWeek=2", 2, c.startWeek)
         assertEquals("2-15双 endWeek=15 (JwParity 不收缩)", 15, c.endWeek)
         assertEquals("2-15双 type=2 (Sleepy 双周)", 2, c.type)
@@ -510,7 +510,7 @@ class JwEams5ParserTest {
         ]}]}
         """.trimIndent())
         val c = p.generateCourseList().single()
-        // startWeek=6 (偶数 ✓), endWeek=6 (JwParity max(6,6)=6)
+        // startWeek=6 (偶数), endWeek=6 (JwParity max(6,6)=6)
         assertEquals("6-6双 startWeek=6", 6, c.startWeek)
         assertEquals("6-6双 endWeek=6 (无倒挂)", 6, c.endWeek)
         assertEquals("6-6双 type=2", 2, c.type)
